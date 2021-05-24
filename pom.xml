@@ -1,0 +1,109 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.redhat</groupId>
+	<artifactId>HelloWorldAPI</artifactId>
+	<version>1.0.0.Final</version>
+	<packaging>war</packaging>
+	<name>Tomcat hello world example</name>
+	<description>A hello world example that can be used with Tomcat 7 and Tomcat 8</description>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<distribution>repo</distribution>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+		</license>
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<version.servlet.api>3.1.0</version.servlet.api>
+		<version.log4j.api>2.8</version.log4j.api>
+		<version.log4j.core>2.8</version.log4j.core>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${version.servlet.api}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>log4japi</groupId>
+			<artifactId>log4japi</artifactId>
+			<version>${version.log4j.api}</version>
+			<scope>system</scope>
+			<systemPath>${pom.basedir}/src/main/webapp/WEB-INF/lib/log4j-api-${version.log4j.api}.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>log4jcore</groupId>
+			<artifactId>log4jcore</artifactId>
+			<version>${version.log4j.core}</version>
+			<scope>system</scope>
+			<systemPath>${pom.basedir}/src/main/webapp/WEB-INF/lib/log4j-core-${version.log4j.core}.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>9.2.1.jre8</version>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<finalName>${project.artifactId}</finalName>
+				<plugins>
+					<plugin>
+					    <groupId>org.jboss.windup.plugin</groupId>
+					    <artifactId>windup-maven-plugin</artifactId>
+					    <version>5.1.4.Final</version>
+					    <executions>
+					        <execution>
+					            <id>run-windup</id>
+					            <phase>package</phase>
+					            <goals>
+					                <goal>windup</goal>
+					            </goals>
+					        </execution>
+					    </executions>
+					    <configuration>
+					    	<input>${project.basedir}</input>
+					        <offlineMode>true</offlineMode>
+					    </configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>openshift</id>
+			<build>
+				<finalName>HelloWorldAPI</finalName>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>2.3</version>
+						<configuration>
+							<failOnMissingWebXml>false</failOnMissingWebXml>
+							<outputDirectory>deployments</outputDirectory>
+							<warName>ROOT</warName>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
