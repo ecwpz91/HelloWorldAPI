@@ -13,6 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 @WebServlet("/hello")
 public class HelloWorldServlet extends HttpServlet {
@@ -29,13 +32,15 @@ public class HelloWorldServlet extends HttpServlet {
       Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 
       // Create our mssql database connection
-      String host = "mssql";
+      String host = "localhost";
       String dbname = "master";
       String port = "1433";
       String username = "sa";
       String password = "yourStrong@Password";
       String connectionUrl = "jdbc:sqlserver://" + host + ":" + port + ";databaseName=" + dbname + ";user=" + username
           + ";password=" + password;
+
+      ResultSet resultSet = null;
 
       System.out.print("Connecting to SQL Server ... ");
       try (Connection connection = DriverManager.getConnection(connectionUrl)) {
@@ -50,6 +55,22 @@ public class HelloWorldServlet extends HttpServlet {
           System.out.println("\nDatabase Information ");
           System.out.println("Database Name: " + meta.getDatabaseProductName());
           System.out.println("Database Version: " + meta.getDatabaseProductVersion());
+
+          try (Statement statement = connection.createStatement();) {
+            // Create and execute a SELECT SQL statement.
+            String selectSql = "SELECT * FROM DemoData.dbo.Products FOR JSON AUTO";
+            resultSet = statement.executeQuery(selectSql);
+
+            // Print results from select statement
+            while (resultSet.next()) {
+              System.out.println("Printing results from selecting DemoData database product information:");
+              System.out.println(resultSet.getString(1));
+            }
+          }
+          // Handle any errors that may have occurred.
+          catch (SQLException e) {
+            e.printStackTrace();
+          }
 
           connection.close();
           System.out.println("All done.");
