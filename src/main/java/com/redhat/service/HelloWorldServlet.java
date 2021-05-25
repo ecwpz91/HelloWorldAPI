@@ -32,7 +32,7 @@ public class HelloWorldServlet extends HttpServlet {
       Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 
       // Create our mssql database connection
-      String host = "localhost";
+      String host = "mssql";
       String dbname = "master";
       String port = "1433";
       String username = "sa";
